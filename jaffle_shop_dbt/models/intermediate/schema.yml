@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: int_orders_with_payments
+    description: >
+      Orders enriched with payment totals. One row per order.
+      Joins stg_orders and stg_payments, aggregating payments to order level.
+    columns:
+      - name: order_id
+        description: 'Unique order identifier (PK)'
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: 'Customer identifier (FK to stg_customers)'
+        tests:
+          - not_null
+      - name: order_date
+        description: 'Date the order was placed'
+      - name: status
+        description: 'Order fulfillment status'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+      - name: total_amount
+        description: 'Total payment amount for the order in dollars'
