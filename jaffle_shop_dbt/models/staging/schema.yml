@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: 'Cleaned customers from Jaffle Shop source. One row per customer.'
+    columns:
+      - name: customer_id
+        description: 'Unique customer identifier (PK). Renamed from id.'
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: 'Customer first name'
+      - name: last_name
+        description: 'Customer last name'
+
+  - name: stg_orders
+    description: 'Cleaned orders from Jaffle Shop source. One row per order.'
+    columns:
+      - name: order_id
+        description: 'Unique order identifier (PK). Renamed from id.'
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: 'Customer identifier (FK to stg_customers)'
+        tests:
+          - not_null
+      - name: order_date
+        description: 'Date the order was placed'
+      - name: status
+        description: 'Order fulfillment status'
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+
+  - name: stg_payments
+    description: >
+      Cleaned payments from Jaffle Shop source. One row per payment.
+      Amount is in dollars (divided by 100 from cents in source).
+    columns:
+      - name: payment_id
+        description: 'Unique payment identifier (PK). Renamed from id.'
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: 'Order identifier (FK to stg_orders). Renamed from orderid.'
+      - name: payment_method
+        description: 'Payment method used'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['credit_card', 'coupon', 'bank_transfer', 'gift_card']
+      - name: amount
+        description: 'Payment amount in dollars. Converted from cents (amount/100).'
